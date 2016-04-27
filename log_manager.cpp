@@ -13,9 +13,9 @@
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 
-#include"date.h"
-#include "log.h"
-#include "logger.h"
+#include "date/date.h"
+#include "log_manager.h"
+#include "log_message.h"
 
 using namespace std::chrono_literals;
 

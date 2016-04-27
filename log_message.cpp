@@ -2,9 +2,9 @@
 #include <map>
 #include <chrono>
 #include <string>
-#include "log.h"
-#include "logger.h"
-#include "date.h"
+#include "log_manager.h"
+#include "log_message.h"
+#include "date/date.h"
 
 std::map<logLevels, std::string> logLevelLables
 {

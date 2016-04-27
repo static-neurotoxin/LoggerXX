@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
-#include "log.h"
-#include "logger.h"
+#include "log_message.h"
+#include "log_manager.h"
 
 using namespace std::chrono_literals;
 
