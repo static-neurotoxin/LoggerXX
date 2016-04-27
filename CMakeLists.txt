@@ -19,13 +19,9 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
 ADD_LIBRARY(LoggerXX STATIC ${SOURCES} ${HEADERS})
 
-
 TARGET_LINK_LIBRARIES(LoggerXX
 	${Boost_LIBRARIES}
  )
-
-#ensure that externals are built before core.
-#ADD_DEPENDENCIES(LoggerXX externals)
 
 # Enable C++14
 SET_PROPERTY(TARGET LoggerXX PROPERTY CXX_STANDARD 14)

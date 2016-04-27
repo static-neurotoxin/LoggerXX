@@ -20,102 +20,105 @@
 
 #include "date/date.h"
 
-enum logLevels
+namespace LogXX
 {
-    LOG_EMERG   = 0,       /* system is unusable */
-    LOG_ALERT   = 1,       /* action must be taken immediately */
-    LOG_CRIT    = 2,       /* critical conditions */
-    LOG_ERR     = 3,       /* error conditions */
-    LOG_WARNING = 4,       /* warning conditions */
-    LOG_NOTICE  = 5,       /* normal but significant condition */
-    LOG_INFO    = 6,       /* informational */
-    LOG_DEBUG   = 7,       /* debug-level messages */
-    LOG_OFF     = 0xFF    // special case used to set the default threshold not for Log() calls
-};
-
-class log : public std::enable_shared_from_this<log>
-{
-public:
-    log(const std::string &file, const std::string &function, uint32_t line, logLevels level)
-    : m_file(file)
-    , m_function(function)
-    , m_line(line)
-    , m_level(level)
-    , m_logTime(std::chrono::system_clock::now())
-    , m_threadID(std::this_thread::get_id())
+    enum levels
     {
-    }
+        LOG_CRIT,    /* critical conditions */
+        LOG_ERR,     /* error conditions */
+        LOG_WARNING, /* warning conditions */
+        LOG_INFO,    /* informational */
+        LOG_DEBUG,   /* debug-level messages */
+    };
 
-    log() = delete;
-    log(const log &) = delete;
-    log(const log &&) = delete;
-
-    template <typename... Args>
-    static void LogMessage(const std::string &file, const std::string &function, uint32_t line, logLevels level, const std::string &format, const Args&... args)
+    class message : public std::enable_shared_from_this<message>
     {
-        auto msg(std::make_shared<log>(file, function, line, level));
-        msg->format(format).print(args...);
-        msg->PostMessage();
-    }
-    
-    void PostMessage();
-    
+    public:
+        message(const boost::filesystem::path &file, const std::string &function, uint32_t line, levels level)
+        : m_file(file)
+        , m_function(function)
+        , m_line(line)
+        , m_level(level)
+        , m_logTime(std::chrono::system_clock::now())
+        , m_threadID(std::this_thread::get_id())
+        {
+        }
 
-    log &format(const std::string &fmtStr);
+        message() = delete;
+        message(const message &) = delete;
+        message(const message &&) = delete;
 
-    void print(){}
+        template <typename... Args>
+        static void LogMessage(const std::string &file, const std::string &function, uint32_t line, levels level, const std::string &format, const Args&... args)
+        {
+            auto msg(std::make_shared<message>(file, function, line, level));
+            msg->format(format).print(args...);
+            msg->PostMessage();
+        }
+        
+        void PostMessage();
+        
 
-    template <typename T>
-    void print(const T& t)
-    {
-        m_format % t;
-    }
+        message &format(const std::string &fmtStr);
 
-    void print(bool b)
-    {
-        m_format % (b ? "true" : "false");
-    }
+        void print(){}
 
-    template <typename First, typename... Rest>
-    void print(const First& first, const Rest&... rest)
-    {
-        print(first);
-        print(rest...);
-    }
+        template <typename T>
+        void print(const T& t)
+        {
+            m_format % t;
+        }
 
-    std::string getMessage() const;
-    uint32_t    getLine()     const {return m_line;}
-    logLevels   getLevel()    const {return m_level;}
-    
-    const std::string             				&getFile()     const {return m_file;}
-    const std::string             				&getFunction() const {return m_function;}
-    const std::chrono::system_clock::time_point &getDate()     const {return m_logTime;}
-    const std::thread::id         				&getThreadID() const {return m_threadID;}
+        void print(bool b)
+        {
+            m_format % (b ? "true" : "false");
+        }
 
-private:
-    boost::format           				m_format;
-    std::string             				m_file;
-    std::string             				m_function;
-    uint32_t                				m_line;
-    logLevels               				m_level;
-    std::chrono::system_clock::time_point 	m_logTime;
-    std::thread::id         				m_threadID;
-};
+        template <typename First, typename... Rest>
+        void print(const First& first, const Rest&... rest)
+        {
+            print(first);
+            print(rest...);
+        }
 
-std::ostream &operator <<(std::ostream &os, const std::shared_ptr<log> msg);
+        std::string getMessage() const;
+        uint32_t    getLine()     const {return m_line;}
+        levels      getLevel()    const {return m_level;}
+        
+        const boost::filesystem::path             	&getFile()     const {return m_file;}
+        const std::string             				&getFunction() const {return m_function;}
+        const std::chrono::system_clock::time_point &getDate()     const {return m_logTime;}
+        const std::thread::id         				&getThreadID() const {return m_threadID;}
 
-#define _trace0(string)     log::LogMessage(__FILE__, __func__, __LINE__, LOG_DEBUG,   "%1%", string);
-#define _info0(string)      log::LogMessage(__FILE__, __func__, __LINE__, LOG_INFO,    "%1%", string);
-#define _warn0(string)      log::LogMessage(__FILE__, __func__, __LINE__, LOG_WARNING, "%1%", string);
-#define _err0(string)       log::LogMessage(__FILE__, __func__, __LINE__, LOG_ERR,     "%1%", string);
-#define _sev0(string)       log::LogMessage(__FILE__, __func__, __LINE__, LOG_CRIT,    "%1%", string);
-#define _fat0(string)       log::LogMessage(__FILE__, __func__, __LINE__, LOG_ALERT,   "%1%", string);
+    private:
+        boost::format           				m_format;
+        boost::filesystem::path             	m_file;
+        std::string             				m_function;
+        uint32_t                				m_line;
+        levels               				    m_level;
+        std::chrono::system_clock::time_point 	m_logTime;
+        std::thread::id         				m_threadID;
+    };
 
-#define _trace(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_DEBUG,   format, __VA_ARGS__);
-#define _info(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_INFO,    format, __VA_ARGS__);
-#define _warn(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_WARNING, format, __VA_ARGS__);
-#define _err(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_ERR,     format, __VA_ARGS__);
-#define _sev(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_CRIT,    format, __VA_ARGS__);
-#define _fat(format,...)	log::LogMessage(__FILE__, __func__, __LINE__, LOG_ALERT,   format, __VA_ARGS__);
+    std::ostream &operator <<(std::ostream &os, const std::shared_ptr<message> msg);
+}
+
+#ifdef _MSC_VER // Visual Studio
+    #define FUNC_NAME __FUNCSIG__
+#else //clang and gcc
+    #define FUNC_NAME __PRETTY_FUNCTION__
+#endif
+
+#define _trace0(string)     LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_DEBUG,   "%1%", string);
+#define _info0(string)      LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_INFO,    "%1%", string);
+#define _warn0(string)      LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_WARNING, "%1%", string);
+#define _err0(string)       LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_ERR,     "%1%", string);
+#define _sev0(string)       LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_CRIT,    "%1%", string);
+
+#define _trace(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_DEBUG,   format, __VA_ARGS__);
+#define _info(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_INFO,    format, __VA_ARGS__);
+#define _warn(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_WARNING, format, __VA_ARGS__);
+#define _err(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_ERR,     format, __VA_ARGS__);
+#define _sev(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_CRIT,    format, __VA_ARGS__);
 
 #endif//_LOG_H_

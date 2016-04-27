@@ -1,4 +1,4 @@
-// LoggerPOC.cpp : Defines the entry point for the console application.
+// managerPOC.cpp : Defines the entry point for the console application.
 //
 #include <iostream>
 #include <string>
@@ -19,99 +19,104 @@
 
 using namespace std::chrono_literals;
 
-logger::logger(boost::filesystem::path configFile)
+namespace LogXX
 {
-    // Read logger configuration, blah blah blah...
-}
 
-void logger::Run()
-{
-    std::lock_guard<std::recursive_mutex> lock(m_logMutex);
-    if(m_globalLogger.lock())
+    manager::manager(boost::filesystem::path configFile)
     {
-        throw std::system_error(std::error_code(), "Only one instance of a logger allowed");
+        // Read manager configuration, blah blah blah...
     }
 
-    m_globalLogger = shared_from_this();
-
-
-    // Launch thread with lambda and shared pointer to ensure that we don't get deleted out from under ourselves
-    auto pThis(shared_from_this());
-    std::thread logThread([pThis]
+    void manager::Run()
     {
-        pThis->ThreadMain();
-    });
-
-    m_logThread.swap(logThread);
-}
-
-std::queue<std::shared_ptr<log>> logger::getMessages()
-{
-    std::lock_guard<std::recursive_mutex> lock(m_logMutex);
-
-    std::queue<std::shared_ptr<log>> messages;
-    messages.swap(m_messages);
-
-    return messages;
-}
-
-void logger::ThreadMain()
-{
-    while(m_globalLogger.lock())
-    {
-        std::mutex waitMutex;
-        std::unique_lock<std::mutex> lock(waitMutex);
-        
-        m_messagesWaiting.wait(lock);
-        LogMessages();
-    }
-}
-
-void logger::LogMessages()
-{
-    std::queue<std::shared_ptr<log>> messages(getMessages());
-    
-    while(!messages.empty())
-    {
-        auto msg(messages.front());
-        messages.pop();
-        for(auto logger: m_loggers)
+        std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+        if(m_globalmanager.lock())
         {
-            logger->LogMessage(msg);
+            throw std::system_error(std::error_code(), "Only one instance of a manager allowed");
+        }
+
+        m_globalmanager = shared_from_this();
+
+
+        // Launch thread with lambda and shared pointer to ensure that we don't get deleted out from under ourselves
+        auto pThis(shared_from_this());
+        std::thread logThread([pThis]
+        {
+            pThis->ThreadMain();
+        });
+
+        m_logThread.swap(logThread);
+    }
+
+    std::queue<std::shared_ptr<message>> manager::getMessages()
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+
+        std::queue<std::shared_ptr<message>> messages;
+        messages.swap(m_messages);
+
+        return messages;
+    }
+
+    void manager::ThreadMain()
+    {
+        while(m_globalmanager.lock())
+        {
+            std::mutex waitMutex;
+            std::unique_lock<std::mutex> lock(waitMutex);
+            
+            m_messagesWaiting.wait(lock);
+            LogMessages();
         }
     }
+
+    void manager::LogMessages()
+    {
+        std::queue<std::shared_ptr<message>> messages(getMessages());
+        
+        while(!messages.empty())
+        {
+            auto msg(messages.front());
+            messages.pop();
+            for(auto manager: m_managers)
+            {
+                manager->LogMessage(msg);
+            }
+        }
+        
+    }
+
+    void manager::Shutdown()
+    {
+        if(m_globalmanager.lock())
+        {
+            m_globalmanager.reset();
+            m_messagesWaiting.notify_all();
+            m_logThread.join();
+            LogMessages(); // Dump any remaining messages
+        }
+    }
+
+    void manager::pushMessage(std::shared_ptr<message> msg)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+        m_messages.push(msg);
+        m_messagesWaiting.notify_one();
+
+    }
+
+    void manager::logMessage(std::shared_ptr<message> msg)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+        auto managerPtr(m_globalmanager.lock());
+
+        if(managerPtr)
+        {
+            managerPtr->pushMessage(msg);
+        }
+    }
+
+    std::weak_ptr<manager> manager::m_globalmanager;
+    std::recursive_mutex  manager::m_logMutex;
     
 }
-
-void logger::Shutdown()
-{
-    if(m_globalLogger.lock())
-    {
-        m_globalLogger.reset();
-        m_messagesWaiting.notify_all();
-        m_logThread.join();
-        LogMessages(); // Dump any remaining messages
-    }
-}
-
-void logger::pushMessage(std::shared_ptr<log> msg)
-{
-    std::lock_guard<std::recursive_mutex> lock(m_logMutex);
-    m_messages.push(msg);
-    m_messagesWaiting.notify_one();
-
-}
-
-void logger::logMessage(std::shared_ptr<log> msg)
-{
-    std::lock_guard<std::recursive_mutex> lock(m_logMutex);
-    auto loggerPtr(m_globalLogger.lock());
-
-    if(loggerPtr)
-    {
-        loggerPtr->pushMessage(msg);
-    }
-}
-
-std::weak_ptr<logger> logger::m_globalLogger;
-std::recursive_mutex  logger::m_logMutex;
