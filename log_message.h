@@ -85,9 +85,9 @@ namespace LogXX
             return this;
         }
 
-        message *set_class(const std::string &class)
+        message *set_class(const std::string &className)
         {
-            m_class = class;
+            m_class = className;
             return this;
         }
 
@@ -174,26 +174,15 @@ namespace LogXX
     #define FUNC_NAME __PRETTY_FUNCTION__
 #endif
 
+// undef and redef if used
 #define LOG_CLASS  ""
 #define LOG_MODULE ""
 
-#define LOG_CLASS_NAME(x)   \
-#ifdef LOG_CLASS            \
-#undef LOG_CLASS            \
-#endif                      \
-#define LOG_CLASS x
-
-#define LOG_MODULE_NAME(x)   \
-#ifdef LOG_MODULE            \
-#undef LOG_MODULE            \
-#endif                       \
-#define LOG_MODULE x
-
 #define _log(LOG_LEVEL, ...)                \
-    std::make_shared<message>()->           \
+    std::make_shared<LogXX::message>()->    \
         set_level(LOG_LEVEL)->              \
         set_file(__FILE__)->                \
-        set_function(__FUNCTION__)->        \
+        set_function(__func__)->            \
         set_line(__LINE__)->                \
         set_extendedFunction(FUNC_NAME)->   \
         set_hash(LINECRC)->                 \

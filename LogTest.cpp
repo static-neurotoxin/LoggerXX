@@ -11,17 +11,17 @@ class foo
 public:
     foo()
     {
-        _trace0("Hello");
+        _trace("Hello");
     }
     
     ~foo()
     {
-        _trace0("bar");
+        _trace("bar");
     }
     
     void foobar()
     {
-        _trace0("foobar");
+        _trace("foobar");
     }
 };
 
@@ -35,11 +35,11 @@ int main(void)
 
     foo f;
 
-	_trace0("trace");
-	_info0("info");
-	_warn0("warning");
-	_err0("error");
-	_sev0("severe");
+	_trace("trace");
+	_info("info");
+	_warn("warning");
+	_err("error");
+	_sev("severe");
     
     f.foobar();
     
@@ -49,7 +49,7 @@ int main(void)
     
     auto func = []
     {
-        _trace0("bar");
+        _trace("bar");
     };
     
     func();

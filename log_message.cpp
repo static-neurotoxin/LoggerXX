@@ -18,17 +18,12 @@ namespace LogXX
         {LOG_DEBUG,     "DEBUG"}
     };
     
-    
-    message &message::format(const std::string &fmtStr)
-    {
-        m_format = boost::format(fmtStr);
 
-        return *this;
-    }
-
-    void message::PostMessage()
+    message *message::PostMessage()
     {
         manager::logMessage(shared_from_this());
+        
+        return this;
     }
 
     std::string message::getMessage() const
@@ -48,7 +43,7 @@ namespace LogXX
            << time << ' '
            << logLevelLables[msg->getLevel()] << ' '
            << '[' << msg->getThreadID() << "] "
-           << msg->getFile().filename() << ':' << msg->getLine() << ' '
+           << msg->getFile().filename().generic_string() << ':' << msg->getLine() << ' '
            << msg->getFunction() << ' '
            << msg->getMessage() << std::endl;
         
