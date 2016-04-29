@@ -20,6 +20,8 @@
 
 #include "date/date.h"
 
+#include "log_hash.h"
+
 namespace LogXX
 {
     enum levels
@@ -34,57 +36,116 @@ namespace LogXX
     class message : public std::enable_shared_from_this<message>
     {
     public:
-        message(const boost::filesystem::path &file, const std::string &function, uint32_t line, levels level)
-        : m_file(file)
-        , m_function(function)
-        , m_line(line)
-        , m_level(level)
-        , m_logTime(std::chrono::system_clock::now())
-        , m_threadID(std::this_thread::get_id())
+        message()
+            : m_line(0)
+            , m_level(LOG_DEBUG)
+            , m_logTime(std::chrono::system_clock::now())
+            , m_threadID(std::this_thread::get_id())
         {
         }
 
-        message() = delete;
+        message(const boost::filesystem::path &file, const std::string &function, uint32_t line, levels level) = delete;
         message(const message &) = delete;
         message(const message &&) = delete;
 
-        template <typename... Args>
-        static void LogMessage(const std::string &file, const std::string &function, uint32_t line, levels level, const std::string &format, const Args&... args)
+        message *set_file(const boost::filesystem::path &path)
         {
-            auto msg(std::make_shared<message>(file, function, line, level));
-            msg->format(format).print(args...);
-            msg->PostMessage();
+            m_file = path;
+            return this;
         }
-        
-        void PostMessage();
-        
 
-        message &format(const std::string &fmtStr);
+        message *set_function(const std::string &function)
+        {
+            m_function = function;
+            return this;
+        }
 
-        void print(){}
+        message *set_line(uint32_t line)
+        {
+            m_line = line;
+            return this;
+        }
+
+        message *set_level(levels level)
+        {
+            m_level = level;
+            return this;
+        }
+
+        message *set_hash(uint64_t hash)
+        {
+            m_hash = hash;
+
+            return this;
+        }
+
+        message *set_extendedFunction(const std::string &function)
+        {
+            m_extendedFunction = function;
+            return this;
+        }
+
+        message *set_class(const std::string &class)
+        {
+            m_class = class;
+            return this;
+        }
+
+        message *set_module(const std::string &module)
+        {
+            m_module = module;
+            return this;
+        }
+
+        // template <typename... Args>
+        // static void LogMessage(const std::string &file, const std::string &function, uint32_t line, levels level, const std::string &format, const Args&... args)
+        // {
+        //     auto msg(std::make_shared<message>(file, function, line, level));
+        //     msg->format(format).print(args...);
+        //     msg->PostMessage();
+        // }
+
+        message *PostMessage();
+
+        template <typename... Args>
+        message *format(const std::string &fmtStr, const Args&... args)
+        {
+            m_format = boost::format(fmtStr);
+            print(args...);
+
+            return this;
+        }
+
+        message *print()
+        {
+            return this;
+        }
 
         template <typename T>
-        void print(const T& t)
+        message *print(const T& t)
         {
             m_format % t;
+            return this;
         }
 
-        void print(bool b)
+        message *print(bool b)
         {
             m_format % (b ? "true" : "false");
+            return this;
         }
 
         template <typename First, typename... Rest>
-        void print(const First& first, const Rest&... rest)
+        message *print(const First& first, const Rest&... rest)
         {
             print(first);
             print(rest...);
+            return this;
         }
 
         std::string getMessage() const;
         uint32_t    getLine()     const {return m_line;}
         levels      getLevel()    const {return m_level;}
-        
+
         const boost::filesystem::path             	&getFile()     const {return m_file;}
         const std::string             				&getFunction() const {return m_function;}
         const std::chrono::system_clock::time_point &getDate()     const {return m_logTime;}
@@ -94,7 +155,11 @@ namespace LogXX
         boost::format           				m_format;
         boost::filesystem::path             	m_file;
         std::string             				m_function;
+        std::string                             m_extendedFunction;
+        std::string                             m_class;
+        std::string                             m_module;
         uint32_t                				m_line;
+        uint64_t                                m_hash;
         levels               				    m_level;
         std::chrono::system_clock::time_point 	m_logTime;
         std::thread::id         				m_threadID;
@@ -109,16 +174,38 @@ namespace LogXX
     #define FUNC_NAME __PRETTY_FUNCTION__
 #endif
 
-#define _trace0(string)     LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_DEBUG,   "%1%", string);
-#define _info0(string)      LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_INFO,    "%1%", string);
-#define _warn0(string)      LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_WARNING, "%1%", string);
-#define _err0(string)       LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_ERR,     "%1%", string);
-#define _sev0(string)       LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_CRIT,    "%1%", string);
+#define LOG_CLASS  ""
+#define LOG_MODULE ""
 
-#define _trace(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_DEBUG,   format, __VA_ARGS__);
-#define _info(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_INFO,    format, __VA_ARGS__);
-#define _warn(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_WARNING, format, __VA_ARGS__);
-#define _err(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_ERR,     format, __VA_ARGS__);
-#define _sev(format,...)	LogXX::message::LogMessage(__FILE__, FUNC_NAME, __LINE__, LogXX::LOG_CRIT,    format, __VA_ARGS__);
+#define LOG_CLASS_NAME(x)   \
+#ifdef LOG_CLASS            \
+#undef LOG_CLASS            \
+#endif                      \
+#define LOG_CLASS x
+
+#define LOG_MODULE_NAME(x)   \
+#ifdef LOG_MODULE            \
+#undef LOG_MODULE            \
+#endif                       \
+#define LOG_MODULE x
+
+#define _log(LOG_LEVEL, ...)                \
+    std::make_shared<message>()->           \
+        set_level(LOG_LEVEL)->              \
+        set_file(__FILE__)->                \
+        set_function(__FUNCTION__)->        \
+        set_line(__LINE__)->                \
+        set_extendedFunction(FUNC_NAME)->   \
+        set_hash(LINECRC)->                 \
+        set_class(LOG_CLASS)->              \
+        set_module(LOG_MODULE)->            \
+        format(__VA_ARGS__)->               \
+        PostMessage();
+
+#define _trace(...)	_log(LogXX::LOG_DEBUG,   __VA_ARGS__);
+#define _info(...)	_log(LogXX::LOG_INFO,    __VA_ARGS__);
+#define _warn(...)	_log(LogXX::LOG_WARNING, __VA_ARGS__);
+#define _err(...)	_log(LogXX::LOG_ERR,     __VA_ARGS__);
+#define _sev(...)	_log(LogXX::LOG_CRIT,    __VA_ARGS__);
 
 #endif//_LOG_H_
