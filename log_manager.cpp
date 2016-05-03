@@ -30,6 +30,7 @@ namespace LogXX
     void manager::Run()
     {
         std::lock_guard<std::recursive_mutex> lock(m_logMutex);
+
         if(m_globalmanager.lock())
         {
             throw std::system_error(std::error_code(), "Only one instance of a manager allowed");
@@ -64,7 +65,7 @@ namespace LogXX
         {
             std::mutex waitMutex;
             std::unique_lock<std::mutex> lock(waitMutex);
-            
+
             m_messagesWaiting.wait(lock);
             LogMessages();
         }
@@ -73,17 +74,18 @@ namespace LogXX
     void manager::LogMessages()
     {
         std::queue<std::shared_ptr<message>> messages(getMessages());
-        
+
         while(!messages.empty())
         {
             auto msg(messages.front());
             messages.pop();
-            for(auto manager: m_managers)
+
+            for(auto manager : m_managers)
             {
                 manager->LogMessage(msg);
             }
         }
-        
+
     }
 
     void manager::Shutdown()
@@ -118,5 +120,5 @@ namespace LogXX
 
     std::weak_ptr<manager> manager::m_globalmanager;
     std::recursive_mutex  manager::m_logMutex;
-    
+
 }

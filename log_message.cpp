@@ -8,7 +8,7 @@
 
 namespace LogXX
 {
-    
+
     std::map<levels, std::string> logLevelLables
     {
         {LOG_CRIT,      "CRITICAL"},
@@ -17,12 +17,12 @@ namespace LogXX
         {LOG_INFO,      "INFO"},
         {LOG_DEBUG,     "DEBUG"}
     };
-    
+
 
     message *message::PostMessage()
     {
         manager::logMessage(shared_from_this());
-        
+
         return this;
     }
 
@@ -46,7 +46,7 @@ namespace LogXX
            << msg->getFile().filename().generic_string() << ':' << msg->getLine() << ' '
            << msg->getFunction() << ' '
            << msg->getMessage() << std::endl;
-        
+
         return os;
     }
 }

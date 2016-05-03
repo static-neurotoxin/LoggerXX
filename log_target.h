@@ -37,36 +37,36 @@ namespace LogXX
 
     class logFile : public logTarget
     {
-    public:
-        logFile(const boost::filesystem::path logFile) : m_file(logFile)
-        {
-            
-        }
-
-        void LogMessage(std::shared_ptr<message> msg) override
-        {
-            if(m_file.is_open())
+        public:
+            logFile(const boost::filesystem::path logFile) : m_file(logFile)
             {
-                m_file << msg << std::endl;
-            }
-        }
 
-    private:
-        boost::filesystem::ofstream m_file;
+            }
+
+            void LogMessage(std::shared_ptr<message> msg) override
+            {
+                if(m_file.is_open())
+                {
+                    m_file << msg << std::endl;
+                }
+            }
+
+        private:
+            boost::filesystem::ofstream m_file;
     };
-                
-    #ifdef _WIN32
+
+#ifdef _WIN32
     class logDebugConsole : public logTarget
     {
-    public:
-        void LogMessage(std::shared_ptr<log> msg) override
-        {
-            std::stringstream s;
-            s << msg;
+        public:
+            void LogMessage(std::shared_ptr<log> msg) override
+            {
+                std::stringstream s;
+                s << msg;
 
-            //TODO: Unicode debug output is tricky; This logTarget will need to be more complex
-            ::OutputDebugStringA(s);
-        }
+                //TODO: Unicode debug output is tricky; This logTarget will need to be more complex
+                ::OutputDebugStringA(s);
+            }
     };
-    #endif
+#endif
 }

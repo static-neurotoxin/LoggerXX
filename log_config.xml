@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LogXX>
+    <function name="test_function" level="debug" />
+    <file name="main.cpp" level="info" />
+    <module name="test module">
+        <class name="test class">
+            <function name="foo" level="warning" />
+        </class>
+    </module>
+</LogXX>
