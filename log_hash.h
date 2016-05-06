@@ -1,3 +1,12 @@
+/**
+ * @file   log_hash.h
+ * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @date   May 2016
+ * @brief  Helper constexpr functions to generate CRCs at compile time
+ * @details  A class to read a configuration file for the logging manager
+ */
+
 #pragma once
 #ifndef _LOG_HASH_H_
 #define _LOG_HASH_H_
@@ -7,6 +16,7 @@
 #include <vector>
 #include <cstdint>
 
+//! CRC32 hash table
 static constexpr uint32_t crc32_table[256] =
 {
     UINT32_C(0x00000000), UINT32_C(0x77073096), UINT32_C(0xee0e612c), UINT32_C(0x990951ba), UINT32_C(0x076dc419), UINT32_C(0x706af48f), UINT32_C(0xe963a535), UINT32_C(0x9e6495a3),
@@ -43,6 +53,7 @@ static constexpr uint32_t crc32_table[256] =
     UINT32_C(0xb3667a2e), UINT32_C(0xc4614ab8), UINT32_C(0x5d681b02), UINT32_C(0x2a6f2b94), UINT32_C(0xb40bbe37), UINT32_C(0xc30c8ea1), UINT32_C(0x5a05df1b), UINT32_C(0x2d02ef8d)
 };
 
+//! CRC64 hash table
 static constexpr uint64_t crc64_table[256] =
 {
     UINT64_C(0x0000000000000000), UINT64_C(0x7ad870c830358979), UINT64_C(0xf5b0e190606b12f2), UINT64_C(0x8f689158505e9b8b), UINT64_C(0xc038e5739841b68f), UINT64_C(0xbae095bba8743ff6), UINT64_C(0x358804e3f82aa47d), UINT64_C(0x4f50742bc81f2d04),
@@ -79,6 +90,7 @@ static constexpr uint64_t crc64_table[256] =
     UINT64_C(0x66e7a46c27f3aa2c), UINT64_C(0x1c3fd4a417c62355), UINT64_C(0x935745fc4798b8de), UINT64_C(0xe98f353477ad31a7), UINT64_C(0xa6df411fbfb21ca3), UINT64_C(0xdc0731d78f8795da), UINT64_C(0x536fa08fdfd90e51), UINT64_C(0x29b7d047efec8728),
 };
 
+//! CRC32 generator
 template<int size, int idx = 0, class dummy = void>
 struct MM
 {
@@ -88,7 +100,7 @@ struct MM
     }
 };
 
-// This is the stop-recursion function
+//! This is the stop-recursion for CRC32
 template<int size, class dummy>
 struct MM<size, size, dummy>
 {
@@ -98,6 +110,7 @@ struct MM<size, size, dummy>
     }
 };
 
+//! CRC64 generator
 template<int size, int idx = 0, class dummy = void>
 struct MMX
 {
@@ -107,7 +120,7 @@ struct MMX
     }
 };
 
-// This is the stop-recursion function
+//! This is the stop-recursion function for CRC64
 template<int size, class dummy>
 struct MMX<size, size, dummy>
 {
@@ -118,16 +131,22 @@ struct MMX<size, size, dummy>
 };
 
 
-// This don't take into account the nul char
+// CRC32 macro
 #define COMPILE_TIME_CRC32_STR(x) (MM<sizeof(x)-1>::crc32(x))
+
+// CRC32 macro with seed value
 #define COMPILE_TIME_CRC32_STR_EX(x, y) (MM<sizeof(x)-1>::crc32(x,y))
 
+// CRC64 macro
 #define COMPILE_TIME_CRC64_STR(x) (MMX<sizeof(x)-1>::crc64(x))
+
+// CRC64 macro with seed value
 #define COMPILE_TIME_CRC64_STR_EX(x, y) (MMX<sizeof(x)-1>::crc64(x,y))
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
+// Generate CRC64 with __FILE__ __func__ and __LINE__ macros
 #define LINECRC COMPILE_TIME_CRC64_STR_EX(__func__, COMPILE_TIME_CRC64_STR_EX(__FILE__, __LINE__))
 
 #endif//_LOG_HASH_H_

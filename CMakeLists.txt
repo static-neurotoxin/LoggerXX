@@ -7,12 +7,14 @@ SET(SOURCES
     log_manager.cpp
     log_message.cpp
     log_target.cpp
+    log_config.cpp
 )
 
 SET(HEADERS
     log_manager.h
     log_message.h
     log_target.h
+    log_config.h
     log_hash.h
 )
 

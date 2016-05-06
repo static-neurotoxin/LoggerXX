@@ -1,3 +1,12 @@
+/**
+ * @file   log_message.cpp
+ * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @date   May 2016
+ * @brief  log message container.
+ * @details A class to encapsulate and format a "printf" style debug logging messages and associated macros
+ */
+
 #include <iostream>
 #include <map>
 #include <chrono>
@@ -8,7 +17,7 @@
 
 namespace LogXX
 {
-
+    //! Map log levels to human readable strings
     std::map<levels, std::string> logLevelLables
     {
         {LOG_CRIT,      "CRITICAL"},
