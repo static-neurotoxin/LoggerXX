@@ -15,18 +15,21 @@
 
 namespace LogXX
 {
-    configuration::configuration(const boost::filesystem::path &path)
+    configuration::configuration(const boost::filesystem::path &path) : m_defaultLevel(LOG_NONE)
     {
-        auto extension(path.extension());
+        if(!path.empty())
+        {
+            auto extension(path.extension());
 
-        if(extension.compare(".json") == 0)
-        {
-            boost::property_tree::read_json(path.generic_string(), m_configuration);
-        }
-        else
-        {
-            boost::property_tree::read_xml(path.generic_string(), m_configuration, boost::property_tree::xml_parser::no_comments | boost::property_tree::xml_parser::trim_whitespace);
-            m_configuration = normalizePTree(m_configuration);
+            if(extension.compare(".json") == 0)
+            {
+                boost::property_tree::read_json(path.generic_string(), m_configuration);
+            }
+            else
+            {
+                boost::property_tree::read_xml(path.generic_string(), m_configuration, boost::property_tree::xml_parser::no_comments | boost::property_tree::xml_parser::trim_whitespace);
+                m_configuration = normalizePTree(m_configuration);
+            }
         }
     }
 
@@ -43,7 +46,7 @@ namespace LogXX
 
     levels configuration::getLevel(const std::shared_ptr<message> msg)
     {
-        levels level(LOG_NONE);
+        levels level(m_defaultLevel);
 
         std::queue<boost::property_tree::ptree> treeQueue;
         treeQueue.push(m_configuration);
@@ -81,11 +84,11 @@ namespace LogXX
                     {
                         messageName = msg->getClass();
                     }
-                    
+
                     enqueue = boost::algorithm::iequals(messageName, child.second.get<std::string>("name"));
-                    
+
                 }
-                
+
                 if(enqueue)
                 {
                     treeQueue.push(child.second);
@@ -103,7 +106,7 @@ namespace LogXX
         boost::property_tree::ptree backends;
         std::queue<boost::property_tree::ptree> treeQueue;
         treeQueue.push(m_configuration);
-        
+
         while(!treeQueue.empty())
         {
             auto &node(treeQueue.front());
@@ -118,11 +121,11 @@ namespace LogXX
                     treeQueue.push(child.second);
                 }
             }
-            
+
             treeQueue.pop();
         }
 
-        
+
         return backends;
 
     }

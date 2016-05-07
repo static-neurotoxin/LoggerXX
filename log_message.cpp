@@ -20,13 +20,18 @@
 namespace LogXX
 {
     //! Map log levels to human readable strings
-    std::map<levels, std::string> logLevelLables
+    //! \note this multimap is used for formatting the log messages and for reading the configuration file
+    std::multimap<levels, std::string> logLevelLables
     {
+        {LOG_NONE,      "NONE"},
+        {LOG_NONE,      "OFF"},
         {LOG_CRIT,      "CRITICAL"},
         {LOG_ERR,       "ERROR"},
         {LOG_WARNING,   "WARNING"},
         {LOG_INFO,      "INFO"},
-        {LOG_DEBUG,     "DEBUG"}
+        {LOG_DEBUG,     "DEBUG"},
+        {LOG_ALL,       "ON"},
+        {LOG_ALL,       "ALL"}
     };
 
     //! Helper to convert text to level
@@ -63,9 +68,19 @@ namespace LogXX
         auto log_date(date::floor<date::days>(log_time_point));
         auto date = date::year_month_day{log_date};
         auto time(date::make_time(log_time_point - log_date));
+        std::string levelText;
+        auto levelIterator(logLevelLables.find(msg->getLevel()));
+        if(levelIterator != logLevelLables.end())
+        {
+            levelText = levelIterator->second;
+        }
+        else
+        {
+            levelText = "level:" + std::to_string(msg->getLevel());
+        }
         os << date << ' '
            << time << ' '
-           << logLevelLables[msg->getLevel()] << ' '
+           << levelText << ' '
            << '[' << msg->getThreadID() << "] "
            << msg->getFile().filename().generic_string() << ':' << msg->getLine() << ' '
            << msg->getFunction() << ' '

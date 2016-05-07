@@ -29,6 +29,13 @@ namespace LogXX
             //! check if debug message is enabled or not, cache results
             bool logMessage(const std::shared_ptr<message> msg);
 
+            //! set default log level
+            levels setDefaultLogLevel(levels level)
+            {
+                m_defaultLevel = level;
+                return m_defaultLevel;
+            }
+
             //! Return list of log back ends and their configuration
             boost::property_tree::ptree getBackends() const;
         private:
@@ -40,6 +47,7 @@ namespace LogXX
 
             std::unordered_map<uint64_t, levels> m_messageCache;
             boost::property_tree::ptree          m_configuration;
+            levels                               m_defaultLevel;
     };
 }
 

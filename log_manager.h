@@ -23,6 +23,8 @@
 
 #include "date/date.h"
 #include "log_target.h"
+#include "log_config.h"
+
 namespace LogXX
 {
     //! Main thread manager
@@ -54,5 +56,7 @@ namespace LogXX
             std::queue<std::shared_ptr<message>> m_messages;
             std::condition_variable m_messagesWaiting;
             std::list<std::shared_ptr<logTarget>> m_managers;
+
+            configuration m_config;
     };
 }

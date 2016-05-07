@@ -35,12 +35,13 @@ namespace LogXX
     //! Default log levels
     enum levels
     {
+        LOG_NONE,    //!< turn off all logging
         LOG_CRIT,    //!< critical conditions
         LOG_ERR,     //!< error conditions
         LOG_WARNING, //!< warning conditions
         LOG_INFO,    //!< informational
         LOG_DEBUG,   //!< debug level messages
-        LOG_NONE     //!< no logging specified
+        LOG_ALL      //!< turn on all logging
     };
 
     //! Container class for log message

@@ -30,9 +30,8 @@ using namespace std::chrono_literals;
 namespace LogXX
 {
 
-    manager::manager(boost::filesystem::path configFile)
+    manager::manager(boost::filesystem::path configFile) : m_config(configFile)
     {
-        // Read manager configuration, blah blah blah...
     }
 
     void manager::Run()
