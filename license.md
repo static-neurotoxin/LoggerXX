@@ -1,6 +1,10 @@
-MIT License
 
-Copyright © 2016 Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+MIT License
+===========
+
+<b>
+Copyright © 2016 [Gordon "Lee" Morgan \<valkerie.fodder@gmail.com\>](mailto:valkerie.fodder@gmail.com "Lee Morgan")
+</b>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

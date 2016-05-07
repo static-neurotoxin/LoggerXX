@@ -1,6 +1,11 @@
-// logger.h
-//
-// A (semi) lightweight logger for c++
+/**
+ * @file   log_target.h
+ * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @date   May 2016
+ * @brief  log back end interface and provided log back ends.
+ */
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -19,15 +24,18 @@
 
 namespace LogXX
 {
+    //! Interface for log back ends
     class logTarget
     {
         public:
-            virtual void LogMessage(std::shared_ptr<message> msg) = 0;
+            virtual void LogMessage(std::shared_ptr<message> msg) = 0; //!< Log message to back end
     };
 
+    //! Log back end that sends log messages to `std::clog` stream
     class logCLog : public logTarget
     {
         public:
+            //! Log message to `std::clog`
             void LogMessage(std::shared_ptr<message> msg) override
             {
                 std::clog << msg << std::endl;
@@ -35,6 +43,7 @@ namespace LogXX
 
     };
 
+    //! Log back end that sends log messages to a file
     class logFile : public logTarget
     {
         public:
@@ -43,6 +52,7 @@ namespace LogXX
 
             }
 
+            //! Log message to file
             void LogMessage(std::shared_ptr<message> msg) override
             {
                 if(m_file.is_open())
@@ -56,9 +66,11 @@ namespace LogXX
     };
 
 #ifdef _WIN32
+    //! Log back end that sends log messages to `::OutputDebugString()`
     class logDebugConsole : public logTarget
     {
         public:
+            // Log message to ::OutputDebugStringA
             void LogMessage(std::shared_ptr<log> msg) override
             {
                 std::stringstream s;

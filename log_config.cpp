@@ -25,9 +25,7 @@ namespace LogXX
         else
         {
             boost::property_tree::read_xml(path.generic_string(), m_configuration, boost::property_tree::xml_parser::no_comments | boost::property_tree::xml_parser::trim_whitespace);
-
         }
-
     }
 
     bool configuration::logMessage(const std::shared_ptr<message> msg)

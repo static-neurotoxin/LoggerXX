@@ -1,4 +1,6 @@
-# LoggerXX
+
+LoggerXX
+==========
 
 A modern C++ logger based on Boost::Format
 
@@ -14,4 +16,3 @@ A modern C++ logger based on Boost::Format
 
 
 
- 

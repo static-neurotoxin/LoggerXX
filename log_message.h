@@ -5,6 +5,7 @@
  * @date   May 2016
  * @brief  log message container.
  * @details A class to encapsulate and format a "printf" style debug logging messages and associated macros
+ *
  */
 
 #pragma once
@@ -58,21 +59,37 @@ namespace LogXX
             message(const message &) = delete;
             message(const message &&) = delete;
 
-            //! Set the filename of the source file
+            /** @name Message construction
+            *  These are a collection of functions to be used to construct a debug mesage, typically from within a macro
+            */
+            ///@{
+            /**
+             * Set the filename of the source file
+             * @param[in] path filename that log message occurs in
+             * @note Typically this function is called with the ```__FILE__``` macro
+             */
             message *set_file(const boost::filesystem::path &path)
             {
                 m_file = path;
                 return this;
             }
 
-            //! Set the function name
-            message *set_function(const std::string &function)
+            /**
+              * Set the function name
+              * @param[in] func function name
+              * @note Typically this function is called with the  ``__func__`` macro
+              */
+            message *set_function(const std::string &func)
             {
-                m_function = function;
+                m_function = func;
                 return this;
             }
 
-            //! Set the line number
+            /**
+             * Set the line number
+              * @param[in] line line number
+              * @note Typically this function is called with the  `__LINE__` macro
+             */
             message *set_line(uint32_t line)
             {
                 m_line = line;
@@ -80,6 +97,7 @@ namespace LogXX
             }
 
             //! Set the log level
+            //! \param[in] level Set the log level
             message *set_level(levels level)
             {
                 m_level = level;
@@ -87,6 +105,8 @@ namespace LogXX
             }
 
             //! Set a unique hash for the log message
+            //! \param[in] hash a unique hash used to identify a log message location
+            //! \note the provided `LINECRC` macro is provieded to generate a CRC64 based on `__FILE__`, `__LINE__ and `__func__` at compile time
             message *set_hash(uint64_t hash)
             {
                 m_hash = hash;
@@ -95,13 +115,17 @@ namespace LogXX
             }
 
             //! Set a more descriptive function name
-            message *set_extendedFunction(const std::string &function)
+            //! \param[in] func a more descriptive function macro
+            //! \note used to wrap the compiler specific function name macros like GCCs `__PRETTY_FUNCTION__` or MSVCs `__FUNCSIG__`
+            message *set_extendedFunction(const std::string &func)
             {
-                m_extendedFunction = function;
+                m_extendedFunction = func;
                 return this;
             }
 
             //! Associate message with a class
+            //! \param[in] className name of the class associated with the log message
+            //! \note This must be managed manually, there is no generic way of accessing class name data, _afaik_.
             message *set_class(const std::string &className)
             {
                 m_class = className;
@@ -109,18 +133,26 @@ namespace LogXX
             }
 
             //! Associate message with an arbitrary module
+            //! \param[in] module name of the module associated with the log message
+            //! \note This is intended to allow log messages to be associated with arbitrary groupings
             message *set_module(const std::string &module)
             {
                 m_module = module;
                 return this;
             }
+            ///@}
 
             //! Queue message with log manager
             message *PostMessage();
 
-            //! Format log message
-            //  @param[in] fmtStr a printf style format string (see boost::format for details)
-            //  @param[in] args   arguments to log
+            //! \name Message formatting functions
+            //! Functions to format a log message with a variable number of arguments in a tye safe fashion using boost::format
+            ///@{
+            /**
+             *  Format log message
+             *  @param[in] fmtStr a printf style format string (see boost::format for details)
+             *  @param[in] args   arguments to log
+             */
             template <typename... Args>
             message *format(const std::string &fmtStr, const Args &... args)
             {
@@ -130,7 +162,7 @@ namespace LogXX
                 return this;
             }
 
-            //! print terminator
+            //! This print specialization will be called when the argument list is empty, terminating the recursion
             message *print()
             {
                 return this;
@@ -151,7 +183,9 @@ namespace LogXX
                 return this;
             }
 
-            //! Recursive print function
+            //! This recursive template function pulls each argument off, left to right and formats it
+            //! \param[in] first The argument to be formatted
+            //! \param[in] rest The remaining unprocessed arguments
             template <typename First, typename... Rest>
             message *print(const First &first, const Rest &... rest)
             {
@@ -159,8 +193,12 @@ namespace LogXX
                 print(rest...);
                 return this;
             }
+            ///@}
 
-
+            /** @name Accessors
+            *  Functions to access log message components
+            */
+            ///@{
             // *INDENT-OFF*
             std::string getMessage() const;                     //!< Get formatted log message
             uint32_t    getLine()     const { return m_line; }  //!< Get log message line number
@@ -172,6 +210,7 @@ namespace LogXX
             const std::thread::id                       &getThreadID() const { return m_threadID; } //!< Get log message thread ID
             uint64_t                                     getHash()     const { return m_hash; }     //!< Get log message hash
             // *INDENT-ON*
+            ///@}
 
         private:
             boost::format                           m_format;
