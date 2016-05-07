@@ -1,5 +1,13 @@
-// managerPOC.cpp : Defines the entry point for the console application.
-//
+/**
+ * @file   log_manager.cpp
+ * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
+ * @date   May 2016
+ * @brief  Global log message manager.
+ * @details A class to manage and push incoming messages to enabled message back ends in a thread safe fashion
+ *
+ */
+
 #include <iostream>
 #include <string>
 #include <sstream>

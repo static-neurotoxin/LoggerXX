@@ -1,7 +1,7 @@
 /**
  * @file   log_message.cpp
  * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
- * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log message container.
  * @details A class to encapsulate and format a "printf" style debug logging messages and associated macros
@@ -11,6 +11,8 @@
 #include <map>
 #include <chrono>
 #include <string>
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include "log_manager.h"
 #include "log_message.h"
 #include "date/date.h"
@@ -27,6 +29,19 @@ namespace LogXX
         {LOG_DEBUG,     "DEBUG"}
     };
 
+    //! Helper to convert text to level
+    levels message::stringToLevel(const std::string &levelStr)
+    {
+        levels level(LOG_NONE);
+
+        auto result(std::find_if(logLevelLables.begin(), logLevelLables.end(), [&levelStr](const auto &i) -> bool
+            {
+                return boost::algorithm::iequals(levelStr, i.second);
+            }));
+        if(result != logLevelLables.end())
+            level = result->first;
+        return level;
+    }
 
     message *message::PostMessage()
     {

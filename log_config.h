@@ -1,7 +1,7 @@
 /**
  * @file   log_config.h
  * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
- * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log configuration file
  * @details A class to read a configuration file for the logging manager
@@ -38,8 +38,8 @@ namespace LogXX
             //! Helper function to "promote" xml attributes to simple nodes
             boost::property_tree::ptree normalizePTree(const boost::property_tree::ptree &tree);
 
-            std::unordered_map<uint64_t, bool> m_messageCache;
-            boost::property_tree::ptree        m_configuration;
+            std::unordered_map<uint64_t, levels> m_messageCache;
+            boost::property_tree::ptree          m_configuration;
     };
 }
 

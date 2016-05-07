@@ -1,7 +1,7 @@
 /**
  * @file   log_hash.h
  * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
- * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  Helper constexpr functions to generate CRCs at compile time
  * @details  A class to read a configuration file for the logging manager

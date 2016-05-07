@@ -1,7 +1,7 @@
 /**
  * @file   log_message.h
  * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
- * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the MIT License
+ * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log message container.
  * @details A class to encapsulate and format a "printf" style debug logging messages and associated macros
@@ -142,6 +142,9 @@ namespace LogXX
             }
             ///@}
 
+            //! Helper to convert text to level
+            static levels stringToLevel(const std::string &levelStr);
+
             //! Queue message with log manager
             message *PostMessage();
 
@@ -206,6 +209,8 @@ namespace LogXX
 
             const boost::filesystem::path               &getFile()     const { return m_file; }     //!< Get log message file
             const std::string                           &getFunction() const { return m_function; } //!< Get log message function
+            const std::string                           &getClass()    const { return m_class; }    //!< Get log message class
+            const std::string                           &getModule()   const { return m_module; }   //!< Get log message module
             const std::chrono::system_clock::time_point &getDate()     const { return m_logTime; }  //!< Get log message timestamp
             const std::thread::id                       &getThreadID() const { return m_threadID; } //!< Get log message thread ID
             uint64_t                                     getHash()     const { return m_hash; }     //!< Get log message hash
