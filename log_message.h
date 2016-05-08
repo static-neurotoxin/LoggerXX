@@ -1,6 +1,6 @@
 /**
  * @file   log_message.h
- * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @author Gordon "Lee" Morgan (valk.erie.fod.der+logxx@gmail.com)
  * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log message container.

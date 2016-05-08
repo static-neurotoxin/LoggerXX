@@ -1,1 +1,5 @@
 .vscode
+*.orig
+html/
+build.*
+.DS_Store

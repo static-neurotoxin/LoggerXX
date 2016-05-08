@@ -1,6 +1,6 @@
 /**
  * @file   log_message.cpp
- * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @author Gordon "Lee" Morgan (valk.erie.fod.der+logxx@gmail.com)
  * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log message container.
@@ -39,12 +39,16 @@ namespace LogXX
     {
         levels level(LOG_NONE);
 
-        auto result(std::find_if(logLevelLables.begin(), logLevelLables.end(), [&levelStr](const auto &i) -> bool
-            {
-                return boost::algorithm::iequals(levelStr, i.second);
-            }));
+        auto result(std::find_if(logLevelLables.begin(), logLevelLables.end(), [&levelStr](const auto & i) -> bool
+        {
+            return boost::algorithm::iequals(levelStr, i.second);
+        }));
+
         if(result != logLevelLables.end())
+        {
             level = result->first;
+        }
+
         return level;
     }
 
@@ -70,6 +74,7 @@ namespace LogXX
         auto time(date::make_time(log_time_point - log_date));
         std::string levelText;
         auto levelIterator(logLevelLables.find(msg->getLevel()));
+
         if(levelIterator != logLevelLables.end())
         {
             levelText = levelIterator->second;
@@ -78,6 +83,7 @@ namespace LogXX
         {
             levelText = "level:" + std::to_string(msg->getLevel());
         }
+
         os << date << ' '
            << time << ' '
            << levelText << ' '

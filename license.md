@@ -3,7 +3,7 @@ MIT License
 ===========
 
 <b>
-Copyright © 2016 [Gordon "Lee" Morgan \<valkerie.fodder@gmail.com\>](mailto:valkerie.fodder@gmail.com "Lee Morgan")
+Copyright © 2016 [Gordon "Lee" Morgan \<valk.erie.fod.der+logxx@gmail.com\>](mailto:valk.erie.fod.der+logxx@gmail.com "Lee Morgan")
 </b>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

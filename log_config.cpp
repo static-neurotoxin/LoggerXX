@@ -1,6 +1,6 @@
 /**
  * @file   log_config.cpp
- * @author Gordon "Lee" Morgan (valkerie.fodder@gmail.com)
+ * @author Gordon "Lee" Morgan (valk.erie.fod.der+logxx@gmail.com)
  * @copyright Copyright © Gordon "Lee" Morgan May 2016. This project is released under the [MIT License](license.md)
  * @date   May 2016
  * @brief  log configuration file
@@ -36,6 +36,7 @@ namespace LogXX
     bool configuration::logMessage(const std::shared_ptr<message> msg)
     {
         uint hash(msg->getHash());
+
         if(m_messageCache.count(hash) == 0)
         {
             m_messageCache[hash] = getLevel(msg);
@@ -54,13 +55,16 @@ namespace LogXX
         while(!treeQueue.empty())
         {
             auto &node(treeQueue.front());
+
             if(node.count("level") > 0)
             {
                 level = message::stringToLevel(node.get<std::string>("level"));
             }
+
             for(const auto &child : node)
             {
                 bool enqueue(false);
+
                 if(child.second.count("name") == 0)
                 {
                     enqueue = true;
@@ -68,6 +72,7 @@ namespace LogXX
                 else
                 {
                     std::string messageName;
+
                     if(boost::algorithm::iequals(child.first, "module"))
                     {
                         messageName = msg->getModule();
@@ -110,6 +115,7 @@ namespace LogXX
         while(!treeQueue.empty())
         {
             auto &node(treeQueue.front());
+
             for(const auto &child : node)
             {
                 if(boost::algorithm::iequals("backend", child.first))
