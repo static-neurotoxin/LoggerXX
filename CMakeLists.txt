@@ -16,6 +16,7 @@ SET(HEADERS
     log_target.h
     log_config.h
     log_hash.h
+    log_format.h
 )
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})

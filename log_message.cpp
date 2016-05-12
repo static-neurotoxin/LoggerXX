@@ -51,7 +51,22 @@ namespace LogXX
 
         return level;
     }
-
+    
+    std::string message::levelToString(levels level)
+    {
+        auto levelIterator(logLevelLables.find(level));
+        
+        if(levelIterator != logLevelLables.end())
+        {
+            return levelIterator->second;
+        }
+        else
+        {
+            return "level:" + std::to_string(level);
+        }
+        
+    }
+    
     message *message::PostMessage()
     {
         manager::logMessage(shared_from_this());

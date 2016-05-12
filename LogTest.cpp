@@ -1,11 +1,34 @@
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
+
+#include <boost/format.hpp>
+enum foobar {FOO_FOO, FOO_BAR, FOO_BAZ};
+
+namespace LogXX
+{
+    boost::format &print(boost::format &fmt, const foobar fb)
+    {
+        switch(fb)
+        {
+            case FOO_FOO:
+                return fmt % "foo";
+                
+            case FOO_BAR:
+                return fmt % "bar";
+                
+            case FOO_BAZ:
+                return fmt % "baz";
+        }
+        
+        return fmt % "unknown enum";
+    }
+}
+
 #include "log_message.h"
 #include "log_manager.h"
 
 using namespace std::chrono_literals;
-
 class foo
 {
     public:
@@ -40,6 +63,10 @@ int main(void)
     _warn("warning");
     _err("error");
     _sev("severe");
+    
+    _trace("bool test %1%", true);
+    _trace("enum test 1 %1%", LogXX::LOG_WARNING);
+    _trace("enum test 2 %1% %2% %3%", FOO_FOO, FOO_BAR, FOO_BAZ);
 
     f.foobar();
 

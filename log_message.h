@@ -29,6 +29,7 @@
 #include "date/date.h"
 
 #include "log_hash.h"
+#include "log_format.h"
 
 namespace LogXX
 {
@@ -146,6 +147,9 @@ namespace LogXX
             //! Helper to convert text to level
             static levels stringToLevel(const std::string &levelStr);
 
+            //! Helper to convert level to string
+            static std::string levelToString(levels level);
+
             //! Queue message with log manager
             message *PostMessage();
 
@@ -161,42 +165,11 @@ namespace LogXX
             message *format(const std::string &fmtStr, const Args &... args)
             {
                 m_format = boost::format(fmtStr);
-                print(args...);
+                print(m_format, args...);
 
                 return this;
             }
 
-            //! This print specialization will be called when the argument list is empty, terminating the recursion
-            message *print()
-            {
-                return this;
-            }
-
-            //! typesafe print for any argument that overrides ostream << operator
-            template <typename T>
-            message *print(const T &t)
-            {
-                m_format % t;
-                return this;
-            }
-
-            //! Example print function to override type (bool)
-            message *print(bool b)
-            {
-                m_format % (b ? "true" : "false");
-                return this;
-            }
-
-            //! This recursive template function pulls each argument off, left to right and formats it
-            //! \param[in] first The argument to be formatted
-            //! \param[in] rest The remaining unprocessed arguments
-            template <typename First, typename... Rest>
-            message *print(const First &first, const Rest &... rest)
-            {
-                print(first);
-                print(rest...);
-                return this;
-            }
             ///@}
 
             /** @name Accessors
@@ -215,8 +188,19 @@ namespace LogXX
             const std::chrono::system_clock::time_point &getDate()     const { return m_logTime; }  //!< Get log message timestamp
             const std::thread::id                       &getThreadID() const { return m_threadID; } //!< Get log message thread ID
             uint64_t                                     getHash()     const { return m_hash; }     //!< Get log message hash
+
+
             // *INDENT-ON*
             ///@}
+
+            //! Get the raw boost format object, usable for streaming
+            const boost::format &getMessageBody() const
+            {
+                return m_format;
+            }
+
+            //! Get the raw boost format object for the header, usable for streaming
+            const boost::format getMessageHeader(const std::string &formatStr = std::string()) const;
 
         private:
             boost::format                           m_format;
@@ -231,6 +215,14 @@ namespace LogXX
             std::chrono::system_clock::time_point   m_logTime;
             std::thread::id                         m_threadID;
     };
+
+    //! print specialization for log level
+    inline boost::format &print(boost::format &fmt, levels level)
+    {
+        return fmt % message::levelToString(level);
+    }
+
+
 
     //! Put log message on to std::ostream
     std::ostream &operator <<(std::ostream &os, const std::shared_ptr<message> msg);
