@@ -88,10 +88,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h2>Why another logging library </h2>
 <ul>
 <li><p class="startli"><b>Portability</b></p>
-<p class="startli">Traditional logging libraries which use <code>printf</code> style formatting strings work well when you use legacy <code>C</code> data types; <code>int</code>, <code>float</code>, <code>char</code>, pointers, etc. This breaks down for newer types such as <code>uint64_t</code> and <code>long long</code>. Other types such as <code>size_t</code> and <code>off_t</code> can change size between 32 and 64 bit compiles on the same platform. Logging macros should not need conditional compilation to compile cleanly between multiple platforms or targets.</p>
+<p class="startli">Traditional logging libraries which use <code>printf</code> style formatting strings work well when you use legacy <code>C</code> data types; <code>int</code>, <code>float</code>, <code>char</code>, pointers, etc. This breaks down for types such as <code>uint64_t</code> and <code>long long</code>. Other types such as <code>size_t</code> and <code>off_t</code> can change size between 32 and 64 bit compiles on the same platform. Logging macros should not need conditional compilation to compile cleanly between multiple platforms or targets.</p>
 </li>
 <li><p class="startli"><b>Type safety</b></p>
-<p class="startli"><code>C++</code> types such as <code>std::string</code> and <code>std::chrono::time_point</code> cannot be used with <code>printf</code> without conversion. User defined types almost never are useable as <code>printf</code> without helper functions. LoggerXX can be used with any type that provides a <code>ostream &gt;&gt;</code> operator or proveded helper function.</p>
+<p class="startli"><code>C++</code> types such as <code>std::string</code> and <code>std::chrono::time_point</code> cannot be used with <code>printf</code> without conversion. User defined types almost never are useable as <code>printf</code> without helper functions. LoggerXX can be used with any type that provides a <code>ostream &gt;&gt;</code> operator or provides a helper function.</p>
 </li>
 <li><p class="startli"><b>Dependencies</b></p>
 <p class="startli">LoggerXX only requires two libraries to use, <a href="http://www.boost.org">Boost</a> and <a href="http://howardhinnant.github.io/date_v2.html">Date</a>. Date is a "header only" library and is an external submodule. Boost is a very common dependency and is effectively free for a large number of projects.</p>
@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p class="startli">LoggerXX allows the mixing of both format string and streaming log apis simplifying code migration or mixing source code from multiple sources.</p>
 </li>
 <li><p class="startli"><b>Functionality</b></p>
-<p class="startli">LoggerXX is designed to easily replace simplistic <code>printf</code> derived loggers and offer advanced functionality with low overhead</p>
+<p class="startli">LoggerXX is designed to easily replace simple <code>printf</code> derived loggers and offer advanced functionality with low overhead</p>
 </li>
 <li><p class="startli"><b>Performance</b></p>
 <p class="startli">LoggerXX is intended to be enabled in both <em>debug</em> and <em>release</em> builds with a minimal performance hit. This has a number desirable effects:</p><ol type="1">
