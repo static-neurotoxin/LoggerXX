@@ -69,6 +69,9 @@ namespace LogXX
 
     message *message::PostMessage()
     {
+        // Format the default message header
+        getMessageHeaderConst(m_defaultFormatString);
+        
         manager::logMessage(shared_from_this());
 
         return this;
@@ -81,19 +84,14 @@ namespace LogXX
         return s.str();
     }
 
-    const boost::format getMessageHeader(std::string formatStr)
+    const boost::format message::getMessageHeaderConst(std::string formatStr) const
     {
-        if(formatStr.empty())
-            formatStr = m_defaultFormatString;
-
-        if(m_headers.count(formatStr) == 0)
-        {
-            auto log_time_point(msg->getDate());
+            auto log_time_point(getDate());
             auto log_date(date::floor<date::days>(log_time_point));
             auto date = date::year_month_day{log_date};
             auto time(date::make_time(log_time_point - log_date));
             std::string levelText;
-            auto levelIterator(logLevelLables.find(msg->getLevel()));
+            auto levelIterator(logLevelLables.find(getLevel()));
 
             if(levelIterator != logLevelLables.end())
             {
@@ -101,24 +99,38 @@ namespace LogXX
             }
             else
             {
-                levelText = "level:" + std::to_string(msg->getLevel());
+                levelText = "level:" + std::to_string(getLevel());
             }
 
             std::string prettyFunc(m_extendedFunction.empty() ? m_function : m_extendedFunction);
 
+            // Add format string to print nothing for all arguments at the end
             boost::format header(formatStr);
+        
+            // Mismatched number of arguements are expected here
+            header.exceptions(boost::io::all_error_bits ^ (boost::io::too_few_args_bit | boost::io::too_many_args_bit));
 
             header % date
                    % time
                    % levelText
                    % getThreadID()
-                   % msg->getFile().filename()
-                   % msg->getFile()
+                   % getFile().filename()
+                   % getFile()
                    % prettyFunc
                    % m_function
                    % m_extendedFunction;
 
-            m_headers.emplace({formatStr, header});
+            return header;
+    }
+
+    const boost::format message::getMessageHeader(std::string formatStr)
+    {
+        if(formatStr.empty())
+            formatStr = m_defaultFormatString;
+
+        if(m_headers.count(formatStr) == 0)
+        {
+            m_headers.insert({formatStr, getMessageHeaderConst(formatStr)});
         }
 
         return m_headers[formatStr];
@@ -126,29 +138,7 @@ namespace LogXX
 
     std::ostream &operator <<(std::ostream &os, const std::shared_ptr<message> msg)
     {
-        auto log_time_point(msg->getDate());
-        auto log_date(date::floor<date::days>(log_time_point));
-        auto date = date::year_month_day{log_date};
-        auto time(date::make_time(log_time_point - log_date));
-        std::string levelText;
-        auto levelIterator(logLevelLables.find(msg->getLevel()));
-
-        if(levelIterator != logLevelLables.end())
-        {
-            levelText = levelIterator->second;
-        }
-        else
-        {
-            levelText = "level:" + std::to_string(msg->getLevel());
-        }
-
-        os << date << ' '
-           << time << ' '
-           << levelText << ' '
-           << '[' << msg->getThreadID() << "] "
-           << msg->getFile().filename().generic_string() << ':' << msg->getLine() << ' '
-           << msg->getFunction() << ' '
-           << msg->getMessage() << std::endl;
+        os << msg->getMessageHeader() << ' ' << msg->getMessageBody() << std::endl;
 
         return os;
     }

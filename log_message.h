@@ -55,7 +55,7 @@ namespace LogXX
                 , m_level(LOG_DEBUG)
                 , m_logTime(std::chrono::system_clock::now())
                 , m_threadID(std::this_thread::get_id())
-                , m_defaultFormatString(defaultFormatString);
+                , m_defaultFormatString(defaultFormatString)
             {
             }
 
@@ -144,6 +144,13 @@ namespace LogXX
                 m_module = module;
                 return this;
             }
+
+            //! Set the default header format string
+            message *set_header_format_string(const std::string &formatString)
+            {
+                m_defaultFormatString = formatString;
+                return this;
+            }
             ///@}
 
             //! Helper to convert text to level
@@ -202,18 +209,28 @@ namespace LogXX
 
             //! \brief Get the raw boost format object for the header, usable for streaming
             //! These are the values that are available
-            //!    - %1% Date
-            //!    - %2% Time
-            //!    - %3% Log level text
-            //!    - %4% Thread ID
-            //!    - %5% Filename
-            //!    - %6% Filename with full path
-            //!    - %7% Extended function name if defined, otherwise basic funtion name
-            //!    - %8% Basic function name
-            //!    - %9% Extended function name
+            //!    - `%1%` Date
+            //!    - `%2%` Time
+            //!    - `%3%` Log level text
+            //!    - `%4%` Thread ID
+            //!    - `%5%` Filename
+            //!    - `%6%` Filename with full path
+            //!    - `%7%` Extended function name if defined, otherwise basic funtion name
+            //!    - `%8%` Basic function name
+            //!    - `%9%` Extended function name
             //!
             //! The default format string is `"%1% %2% %3% [%4%] %5% %7%"`
-            const boost::format getMessageHeader(std::string formatStr = std::string());
+            const boost::format getMessageHeader(std::string formatStr);
+            const boost::format getMessageHeaderConst(std::string formatStr) const;
+            const boost::format getMessageHeader() const
+            {
+                // We should always pregenerate the default header
+                if(m_headers.count(m_defaultFormatString))
+                    return m_headers.find(m_defaultFormatString)->second;
+                
+                return getMessageHeaderConst(m_defaultFormatString);
+            }
+
 
         private:
             boost::format                           m_format;
