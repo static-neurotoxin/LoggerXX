@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>LogXX: LoggerXX</title>
+<title>LoggerXX: LoggerXX</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,10 +23,10 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">LogXX
+   <div id="projectname">LoggerXX
    &#160;<span id="projectnumber">0.5α (alpha)</span>
    </div>
-   <div id="projectbrief">A modern &quot;format string&quot; logging library</div>
+   <div id="projectbrief">A modern &quot;printf format string&quot; logging library</div>
   </td>
  </tr>
  </tbody>
@@ -82,27 +82,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">LoggerXX </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A <b>modern</b> C++ logger based on Boost::Format</p>
-<p>Copyright © <a href="#" onclick="location.href='mai'+'lto:'+'val'+'k.'+'eri'+'e.'+'fod'+'.d'+'er+'+'lo'+'gxx'+'@g'+'mai'+'l.'+'com'+'?s'+'ubj'+'ec'+'t=L'+'og'+'XX'; return false;">Gordon "Lee" Morgan</a> May 2016. This project is released under the <a class="el" href="md_license.html">MIT License</a></p>
+<div class="textblock"><h2><a href="https://github.com/static-neurotoxin/LoggerXX/wiki">Github project page</a> </h2>
+<p>A <b>modern</b> C++ logger based on Boost::Format</p>
+<p>Copyright © <a href="#" onclick="location.href='mai'+'lto:'+'val'+'k.'+'eri'+'e.'+'fod'+'.d'+'er+'+'lo'+'gge'+'rx'+'x@g'+'ma'+'il.'+'co'+'m?s'+'ub'+'jec'+'t='+'Log'+'ge'+'rXX'; return false;">Gordon "Lee" Morgan</a> May 2016. This project is released under the <a class="el" href="md_license.html">MIT License</a></p>
 <h2>Why another logging library </h2>
 <ul>
 <li><p class="startli"><b>Portability</b></p>
 <p class="startli">Traditional logging libraries which use <code>printf</code> style formatting strings work well when you use legacy <code>C</code> data types; <code>int</code>, <code>float</code>, <code>char</code>, pointers, etc. This breaks down for newer types such as <code>uint64_t</code> and <code>long long</code>. Other types such as <code>size_t</code> and <code>off_t</code> can change size between 32 and 64 bit compiles on the same platform. Logging macros should not need conditional compilation to compile cleanly between multiple platforms or targets.</p>
 </li>
 <li><p class="startli"><b>Type safety</b></p>
-<p class="startli"><code>C++</code> types such as <code>std::string</code> and <code>std::chrono::time_point</code> cannot be used with <code>printf</code> without conversion. User defined types almost never are useable as <code>printf</code> without helper functions. <a class="el" href="namespace_log_x_x.html">LogXX</a> can be used with any type that provides a <code>ostream &gt;&gt;</code> operator or proveded helper function.</p>
+<p class="startli"><code>C++</code> types such as <code>std::string</code> and <code>std::chrono::time_point</code> cannot be used with <code>printf</code> without conversion. User defined types almost never are useable as <code>printf</code> without helper functions. LoggerXX can be used with any type that provides a <code>ostream &gt;&gt;</code> operator or proveded helper function.</p>
 </li>
 <li><p class="startli"><b>Dependencies</b></p>
-<p class="startli"><a class="el" href="namespace_log_x_x.html">LogXX</a> only requires two libraries to use, <a href="http://www.boost.org">Boost</a> and <a href="http://howardhinnant.github.io/date_v2.html">Date</a>. Date is a "header only" library and is an external submodule. Boost is a very common dependency and is effectively free for a large number of projects.</p>
+<p class="startli">LoggerXX only requires two libraries to use, <a href="http://www.boost.org">Boost</a> and <a href="http://howardhinnant.github.io/date_v2.html">Date</a>. Date is a "header only" library and is an external submodule. Boost is a very common dependency and is effectively free for a large number of projects.</p>
 </li>
 <li><p class="startli"><b>Streaming and Format string APIs</b></p>
-<p class="startli"><a class="el" href="namespace_log_x_x.html">LogXX</a> allows the mixing of both format string and streaming log apis simplifying code migration or mixing source code from multiple sources.</p>
+<p class="startli">LoggerXX allows the mixing of both format string and streaming log apis simplifying code migration or mixing source code from multiple sources.</p>
 </li>
 <li><p class="startli"><b>Functionality</b></p>
-<p class="startli"><a class="el" href="namespace_log_x_x.html">LogXX</a> is designed to easily replace simplistic <code>printf</code> derived loggers and offer advanced functionality with low overhead</p>
+<p class="startli">LoggerXX is designed to easily replace simplistic <code>printf</code> derived loggers and offer advanced functionality with low overhead</p>
 </li>
 <li><p class="startli"><b>Performance</b></p>
-<p class="startli"><a class="el" href="namespace_log_x_x.html">LogXX</a> is intended to be enabled in both <em>debug</em> and <em>release</em> builds with a minimal performance hit. This has a number desirable effects:</p><ol type="1">
+<p class="startli">LoggerXX is intended to be enabled in both <em>debug</em> and <em>release</em> builds with a minimal performance hit. This has a number desirable effects:</p><ol type="1">
 <li>This will eliminate a number of "unused variable" warnings that typically occur in release builds when return values are logged.</li>
 <li>Functions can safely be used in logging macros, classic "nop" macros will remove these calls in release builds.</li>
 <li>You can enable a ring buffer that collects all log messages to write into a crash log, regardless of log level.</li>
