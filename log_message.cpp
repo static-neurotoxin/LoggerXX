@@ -51,11 +51,11 @@ namespace LogXX
 
         return level;
     }
-    
+
     std::string message::levelToString(levels level)
     {
         auto levelIterator(logLevelLables.find(level));
-        
+
         if(levelIterator != logLevelLables.end())
         {
             return levelIterator->second;
@@ -64,9 +64,9 @@ namespace LogXX
         {
             return "level:" + std::to_string(level);
         }
-        
+
     }
-    
+
     message *message::PostMessage()
     {
         manager::logMessage(shared_from_this());
@@ -79,6 +79,49 @@ namespace LogXX
         std::stringstream s;
         s << m_format;
         return s.str();
+    }
+
+    const boost::format getMessageHeader(std::string formatStr)
+    {
+        if(formatStr.empty())
+            formatStr = m_defaultFormatString;
+
+        if(m_headers.count(formatStr) == 0)
+        {
+            auto log_time_point(msg->getDate());
+            auto log_date(date::floor<date::days>(log_time_point));
+            auto date = date::year_month_day{log_date};
+            auto time(date::make_time(log_time_point - log_date));
+            std::string levelText;
+            auto levelIterator(logLevelLables.find(msg->getLevel()));
+
+            if(levelIterator != logLevelLables.end())
+            {
+                levelText = levelIterator->second;
+            }
+            else
+            {
+                levelText = "level:" + std::to_string(msg->getLevel());
+            }
+
+            std::string prettyFunc(m_extendedFunction.empty() ? m_function : m_extendedFunction);
+
+            boost::format header(formatStr);
+
+            header % date
+                   % time
+                   % levelText
+                   % getThreadID()
+                   % msg->getFile().filename()
+                   % msg->getFile()
+                   % prettyFunc
+                   % m_function
+                   % m_extendedFunction;
+
+            m_headers.emplace({formatStr, header});
+        }
+
+        return m_headers[formatStr];
     }
 
     std::ostream &operator <<(std::ostream &os, const std::shared_ptr<message> msg)

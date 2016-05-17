@@ -23,6 +23,7 @@
 #include <queue>
 #include <thread>
 #include <condition_variable>
+#include <unordered_map>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 
@@ -49,11 +50,12 @@ namespace LogXX
     class message : public std::enable_shared_from_this<message>
     {
         public:
-            message()
+            message(const std::string &defaultFormatString = "%1% %2% %3% [%4%] %5% %7%")
                 : m_line(0)
                 , m_level(LOG_DEBUG)
                 , m_logTime(std::chrono::system_clock::now())
                 , m_threadID(std::this_thread::get_id())
+                , m_defaultFormatString(defaultFormatString);
             {
             }
 
@@ -189,7 +191,6 @@ namespace LogXX
             const std::thread::id                       &getThreadID() const { return m_threadID; } //!< Get log message thread ID
             uint64_t                                     getHash()     const { return m_hash; }     //!< Get log message hash
 
-
             // *INDENT-ON*
             ///@}
 
@@ -199,8 +200,20 @@ namespace LogXX
                 return m_format;
             }
 
-            //! Get the raw boost format object for the header, usable for streaming
-            const boost::format getMessageHeader(const std::string &formatStr = std::string()) const;
+            //! \brief Get the raw boost format object for the header, usable for streaming
+            //! These are the values that are available
+            //!    - %1% Date
+            //!    - %2% Time
+            //!    - %3% Log level text
+            //!    - %4% Thread ID
+            //!    - %5% Filename
+            //!    - %6% Filename with full path
+            //!    - %7% Extended function name if defined, otherwise basic funtion name
+            //!    - %8% Basic function name
+            //!    - %9% Extended function name
+            //!
+            //! The default format string is `"%1% %2% %3% [%4%] %5% %7%"`
+            const boost::format getMessageHeader(std::string formatStr = std::string());
 
         private:
             boost::format                           m_format;
@@ -214,6 +227,9 @@ namespace LogXX
             levels                                  m_level;
             std::chrono::system_clock::time_point   m_logTime;
             std::thread::id                         m_threadID;
+            std::string                             m_defaultFormatString;
+
+            std::unordered_map<std::string, boost::format> m_headers;
     };
 
     //! print specialization for log level
