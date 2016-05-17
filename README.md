@@ -2,9 +2,12 @@
 LoggerXX
 ========
 
+[Github project page](https://github.com/static-neurotoxin/LoggerXX/wiki)
+-------------------------------------------------------------------------
+
 A **modern** C++ logger based on Boost::Format
 
-Copyright © [Gordon "Lee" Morgan](mailto:valk.erie.fod.der+logxx@gmail.com?subject=LogXX) May 2016. This project is released under the [MIT License](license.md)
+Copyright © [Gordon "Lee" Morgan](mailto:valk.erie.fod.der+loggerxx@gmail.com?subject=LoggerXX) May 2016. This project is released under the [MIT License](license.md)
 
 Why another logging library
 ---------------------------
@@ -20,25 +23,25 @@ Why another logging library
 
    `C++` types such as `std::string` and `std::chrono::time_point` cannot be used with `printf` without conversion.
    User defined types almost never are useable as `printf` without helper functions.
-   LogXX can be used with any type that provides a `ostream >>` operator or proveded helper function.
+   LoggerXX can be used with any type that provides a `ostream >>` operator or proveded helper function.
 
 * **Dependencies**
 
-   LogXX only requires two libraries to use, [Boost](http://www.boost.org) and [Date](http://howardhinnant.github.io/date_v2.html).
+   LoggerXX only requires two libraries to use, [Boost](http://www.boost.org) and [Date](http://howardhinnant.github.io/date_v2.html).
    Date is a "header only" library and is an external submodule.
    Boost is a very common dependency and is effectively free for a large number of projects.
 
 * **Streaming and Format string APIs**
 
-   LogXX allows the mixing of both format string and streaming log apis simplifying code migration or mixing source code from multiple sources.
+   LoggerXX allows the mixing of both format string and streaming log apis simplifying code migration or mixing source code from multiple sources.
 
 * **Functionality**
 
-   LogXX is designed to easily replace simplistic `printf` derived loggers and offer advanced functionality with low overhead
+   LoggerXX is designed to easily replace simplistic `printf` derived loggers and offer advanced functionality with low overhead
 
 * **Performance**
 
-   LogXX is intended to be enabled in both *debug* and *release* builds with a minimal performance hit.
+   LoggerXX is intended to be enabled in both *debug* and *release* builds with a minimal performance hit.
    This has a number desirable effects:
    1. This will eliminate a number of "unused variable" warnings that typically occur in release builds when return values are logged.
    2. Functions can safely be used in logging macros, classic "nop" macros will remove these calls in release builds.
