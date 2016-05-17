@@ -5,13 +5,13 @@ To-do list
 Versions
 --------
 
-| Version | Feature                                      |
-|---------|----------------------------------------------|
-| 0.6     | Read back end configuration from config file |
-| 0.7     | Add streaming log API                        |
-| 0.8     | Add ring buffer to store log messages        |
-| 0.9     | Add syslog back end                          |
-| 1.0     | Add unit tests                               |
+| Version | Feature                                                      |
+|:-------:|--------------------------------------------------------------|
+| 0.6     | Read back end configuration from config file                 |
+| 0.7     | Add streaming log API                                        |
+| 0.8     | Add ring buffer to store log messages                        |
+| 0.9     | Add more back ends (syslog, OutputDebugString, file and csv) |
+| 1.0     | Add unit tests, code cleanup pass                            |
 
 Release status
 --------------

@@ -15,7 +15,7 @@ Why another logging library
 * **Portability**
 
    Traditional logging libraries which use `printf` style formatting strings work well when you use legacy `C` data types;
-   `int`, `float`, `char`, pointers, etc. This breaks down for newer types such as `uint64_t` and `long long`.
+   `int`, `float`, `char`, pointers, etc. This breaks down for types such as `uint64_t` and `long long`.
    Other types such as `size_t` and `off_t` can change size between 32 and 64 bit compiles on the same platform.
    Logging macros should not need conditional compilation to compile cleanly between multiple platforms or targets.
 
@@ -23,7 +23,7 @@ Why another logging library
 
    `C++` types such as `std::string` and `std::chrono::time_point` cannot be used with `printf` without conversion.
    User defined types almost never are useable as `printf` without helper functions.
-   LoggerXX can be used with any type that provides a `ostream >>` operator or proveded helper function.
+   LoggerXX can be used with any type that provides a `ostream >>` operator or provides a helper function.
 
 * **Dependencies**
 
@@ -37,7 +37,7 @@ Why another logging library
 
 * **Functionality**
 
-   LoggerXX is designed to easily replace simplistic `printf` derived loggers and offer advanced functionality with low overhead
+   LoggerXX is designed to easily replace simple `printf` derived loggers and offer advanced functionality with low overhead
 
 * **Performance**
 
